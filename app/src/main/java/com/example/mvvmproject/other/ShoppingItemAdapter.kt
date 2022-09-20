@@ -1,6 +1,8 @@
 package com.example.mvvmproject.other
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +14,8 @@ import kotlinx.android.synthetic.main.shopping_item.view.*
 
 class ShoppingItemAdapter(
     var items: List<ShoppingItem>,
-    private val viewModel: ShoppingViewModel
+    private val viewModel: ShoppingViewModel,
+    private val context:Context
 ) : RecyclerView.Adapter<ShoppingItemAdapter.ShoppingViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShoppingViewHolder {
         val view =
@@ -26,8 +29,20 @@ class ShoppingItemAdapter(
         holder.itemView.tvName.text = currentShoppingItem.name
         holder.itemView.tvAmount.text = "${currentShoppingItem.amount}"
         holder.itemView.ivDelete.setOnClickListener {
-            
-            viewModel.delete(currentShoppingItem)
+            val builder = AlertDialog.Builder(context)
+            builder.setMessage("Are you sure you want to Delete?")
+                .setCancelable(false)
+                .setPositiveButton("Yes") { dialog, id ->
+                    // Delete selected note from database
+                    viewModel.delete(currentShoppingItem)
+
+                }
+                .setNegativeButton("No") { dialog, id ->
+                    // Dismiss the dialog
+                    dialog.dismiss()
+                }
+            val alert = builder.create()
+            alert.show()
         }
         holder.itemView.ivPlus.setOnClickListener {
             currentShoppingItem.amount++
